@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/letter-j.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/letter_j_favicon_32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/letter_j_favicon_16.ico">
+  <link rel="mask-icon" href="/images/letter-j.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"xujinzh.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.9.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="机器学习中划分数据集的主要目的是为了避免过拟合。 在机器学习领域，为了避免过拟合和模型选择偏差常常划分数据集为三类：  训练集（training set）  验证集（cross-validation set or development set or dev set）  测试集（testing set）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习中的数据划分技巧">
+<meta property="og:url" content="https://xujinzh.github.io/2020/08/17/data-spliting-technique-in-machine-learning/index.html">
+<meta property="og:site_name" content="J Blog">
+<meta property="og:description" content="机器学习中划分数据集的主要目的是为了避免过拟合。 在机器学习领域，为了避免过拟合和模型选择偏差常常划分数据集为三类：  训练集（training set）  验证集（cross-validation set or development set or dev set）  测试集（testing set）">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-08-17T09:07:59.000Z">
+<meta property="article:modified_time" content="2022-01-04T01:59:36.179Z">
+<meta property="article:author" content="Jinzhong Xu">
+<meta property="article:tag" content="ml">
+<meta property="article:tag" content="data">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://xujinzh.github.io/2020/08/17/data-spliting-technique-in-machine-learning/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://xujinzh.github.io/2020/08/17/data-spliting-technique-in-machine-learning/","path":"2020/08/17/data-spliting-technique-in-machine-learning/","title":"机器学习中的数据划分技巧"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>机器学习中的数据划分技巧 | J Blog</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">J Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">204</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">19</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">219</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%AD%E7%BB%83%E9%9B%86"><span class="nav-number">1.</span> <span class="nav-text">训练集</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81%E9%9B%86"><span class="nav-number">2.</span> <span class="nav-text">验证集</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E9%9B%86"><span class="nav-number">3.</span> <span class="nav-text">测试集</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%88%92%E5%88%86%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="nav-number">4.</span> <span class="nav-text">如何划分数据集</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jinzhong Xu"
+      src="/images/silence.jpg">
+  <p class="site-author-name" itemprop="name">Jinzhong Xu</p>
+  <div class="site-description" itemprop="description">众妙之门</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">219</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">204</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xujinzh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xujinzh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jinzhongxu@csu.ac.cn" title="E-Mail → mailto:jinzhongxu@csu.ac.cn" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/xjz333" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;xjz333" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.mathscv.com/aws" title="JupyterHub → https:&#x2F;&#x2F;www.mathscv.com&#x2F;aws" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i>JupyterHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.mathscv.com/cloud" title="iCloud → https:&#x2F;&#x2F;www.mathscv.com&#x2F;cloud" rel="noopener" target="_blank"><i class="fab fa-google fa-fw"></i>iCloud</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://xujinzh.github.io/" title="J-GitHub → https:&#x2F;&#x2F;xujinzh.github.io"><i class="fab fa-instagram fa-fw"></i>J-GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.mathscv.com/" title="J-MathsCV → https:&#x2F;&#x2F;www.mathscv.com" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i>J-MathsCV</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xujinzh.github.io/2020/08/17/data-spliting-technique-in-machine-learning/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/silence.jpg">
+      <meta itemprop="name" content="Jinzhong Xu">
+      <meta itemprop="description" content="众妙之门">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="J Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          机器学习中的数据划分技巧
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-08-17 17:07:59" itemprop="dateCreated datePublished" datetime="2020-08-17T17:07:59+08:00">2020-08-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-01-04 09:59:36" itemprop="dateModified" datetime="2022-01-04T09:59:36+08:00">2022-01-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/research/" itemprop="url" rel="index"><span itemprop="name">research</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/research/machine-learning/" itemprop="url" rel="index"><span itemprop="name">machine learning</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>机器学习中划分数据集的主要目的是为了避免过拟合。</p>
+<p>在机器学习领域，为了避免过拟合和模型选择偏差常常划分数据集为三类：</p>
+<ol>
+<li><p>训练集（training set）</p>
+</li>
+<li><p>验证集（cross-validation set or development set or dev set）</p>
+</li>
+<li><p>测试集（testing set）</p>
+<a id="more"></a>
+
+</li>
+</ol>
+<p>我们尝试在训练集上构建模型，然后在验证集上尽可能优化超参数。最后，在我们的模型准备好后，在测试集上评估我们的模型。</p>
+<p>对于机器学习算法研究员，有时候会省略测试集。测试集旨在对算法在现实世界中数据上进行无偏估计，此时，整个数据集分为两部分。将数据集分为两部分的研究员通常将验证集称为测试集。</p>
+<h1 id="训练集"><a href="#训练集" class="headerlink" title="训练集"></a>训练集</h1><p>用于拟合模型的数据样本，即我们用于训练模型的数据集的实际子集（在神经网络的中估算权重和偏差）。该模型从该数据中学习并优化模型参数。</p>
+<h1 id="验证集"><a href="#验证集" class="headerlink" title="验证集"></a>验证集</h1><p>我们通过最小化交叉验证集上的误差来选择适当的模型或多项式的阶数（如果仅使用回归模型）。</p>
+<h1 id="测试集"><a href="#测试集" class="headerlink" title="测试集"></a>测试集</h1><p>用于对训练数据集上的最终模型进行无偏评估的数据样本。仅在使用训练集和验证集对模型进行完全训练之后，才使用它。因此，测试集是一种用于一旦将模型部署在现实场景使用时将遇到的情况评估集。</p>
+<p>该测试集通常用于评估Kaggle或Analytics Vidhya的竞赛中的不同模型。通常，在机器学习黑客马拉松中，交叉验证集会与训练集一起发布，而实际测试集只会在比赛即将结束时才发布，而测试集上模型的得分决定了优胜者。</p>
+<h1 id="如何划分数据集"><a href="#如何划分数据集" class="headerlink" title="如何划分数据集"></a>如何划分数据集</h1><p>答案通常在于数据集本身。比例是根据我们可用数据的大小和类型（对于时间序列数据，拆分技术有所不同）确定的。</p>
+<p>如果我们的数据集的大小在100到1000000之间，则将其按60:20:20的比例进行分配。即60％的数据将进入训练集，20％的数据将进入验证集，其余数据将进入测试集。 如果数据集的大小大于一百万，那么我们可以将其拆分为类似98：1：1或99：0.5：0.5的大小。</p>
+<p>决定分割率的主要目的是所有三个集合都应具有原始数据集的总体趋势。如果我们的研究员收集的数据很少，那么最终我们可能会选择一些偏向于仅在研究员收集数据表现的趋势的模型。训练集也是如此-太少的数据会使模型偏向仅在数据集的那个子集中发现的某些趋势。</p>
+<p>我们部署的模型不过是估算器，用于了解数据中的统计趋势。因此，重要的是用于学习的数据以及用于验证或测试模型的数据应遵循尽可能相似的统计分布。尽可能完美地实现这一目标的方法之一是随机选择子集（这里是训练集，验证集和/或测试集）。例如，假设您正在进行人脸检测项目，并且人脸训练图片是从网络上拍摄的，而验证/测试图片是从用户手机中获取的，那么训练集和验证/测试集的属性将不匹配。</p>
+<p>一种划分训练集、验证集、测试集为0.6，0.2，0.2的方法如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 导入scikit-learn中数据集划分包</span></span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"></span><br><span class="line"><span class="comment"># 随机划分20%的数据样本为测试集</span></span><br><span class="line">x, x_test, y, y_test = train_test_split(data, labels, test_size=<span class="number">0.2</span>, train_size=<span class="number">0.8</span>, random_state=<span class="number">3</span>)</span><br><span class="line"><span class="comment"># 随机划分剩下（80%）的25%为验证集（整个样本的20%=80%*25%）和75%为训练集（整个样本的60%=80%*75%）</span></span><br><span class="line">x_train, x_cross_validation, y_train, y_cross_validation = train_test_split(x, y, test_size=<span class="number">0.25</span>, train_size=<span class="number">0.75</span>, random_state=<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>感谢打赏</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Jinzhong Xu 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Jinzhong Xu 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>原作者： </strong>Jinzhong Xu
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://xujinzh.github.io/2020/08/17/data-spliting-technique-in-machine-learning/" title="机器学习中的数据划分技巧">https://xujinzh.github.io/2020/08/17/data-spliting-technique-in-machine-learning/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/ml/" rel="tag"><i class="fa fa-tag"></i> ml</a>
+              <a href="/tags/data/" rel="tag"><i class="fa fa-tag"></i> data</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/08/15/Newton-Leibniz-formula/" rel="prev" title="牛顿-莱布尼茨公式">
+                  <i class="fa fa-chevron-left"></i> 牛顿-莱布尼茨公式
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/08/19/python-calling-c-code/" rel="next" title="Python 调用 C 语言的函数">
+                  Python 调用 C 语言的函数 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jinzhong Xu</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5f45c300bef10091" async="async"></script>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"xujinzh","repo":"xujinzh.github.io","client_id":"695ca5d39e2ba2f9feb5","client_secret":"9d4027af6364ff54595b7a8580977ec58c38a5ae","admin_user":"xujinzh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"c7b92210f760ca9ec9a92723a59c57e1"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

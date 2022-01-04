@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/letter-j.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/letter_j_favicon_32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/letter_j_favicon_16.ico">
+  <link rel="mask-icon" href="/images/letter-j.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"xujinzh.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.9.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="凸函数（Convex function）和拐点（Inflection point）。 此部分为参考 华东师范大学《数学分析上册》。以下内容为学习中的重点总结。 凸函数一般用来证明不等式；注意左右导数和凸函数定义公式的联系；凸函数的性质比较好，在机器学习中是理想的代价函数，因为好求最小值点；注意拐点中的鞍点（是一阶导数等于0的点，即拐点中的驻点或稳定点）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="凸函数和拐点">
+<meta property="og:url" content="https://xujinzh.github.io/2020/03/18/convex-function-and-inflection-point/index.html">
+<meta property="og:site_name" content="J Blog">
+<meta property="og:description" content="凸函数（Convex function）和拐点（Inflection point）。 此部分为参考 华东师范大学《数学分析上册》。以下内容为学习中的重点总结。 凸函数一般用来证明不等式；注意左右导数和凸函数定义公式的联系；凸函数的性质比较好，在机器学习中是理想的代价函数，因为好求最小值点；注意拐点中的鞍点（是一阶导数等于0的点，即拐点中的驻点或稳定点）。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-03-18T05:05:49.000Z">
+<meta property="article:modified_time" content="2022-01-04T01:59:36.172Z">
+<meta property="article:author" content="Jinzhong Xu">
+<meta property="article:tag" content="convex">
+<meta property="article:tag" content="inflection">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://xujinzh.github.io/2020/03/18/convex-function-and-inflection-point/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://xujinzh.github.io/2020/03/18/convex-function-and-inflection-point/","path":"2020/03/18/convex-function-and-inflection-point/","title":"凸函数和拐点"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>凸函数和拐点 | J Blog</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">J Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">204</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">19</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">219</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%87%B8%E5%87%BD%E6%95%B0"><span class="nav-number">1.</span> <span class="nav-text">凸函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8B%90%E7%82%B9"><span class="nav-number">2.</span> <span class="nav-text">拐点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%87%A0%E4%B8%AA%E9%87%8D%E8%A6%81%E4%B8%8D%E7%AD%89%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">几个重要不等式</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jinzhong Xu"
+      src="/images/silence.jpg">
+  <p class="site-author-name" itemprop="name">Jinzhong Xu</p>
+  <div class="site-description" itemprop="description">众妙之门</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">219</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">204</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xujinzh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xujinzh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jinzhongxu@csu.ac.cn" title="E-Mail → mailto:jinzhongxu@csu.ac.cn" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/xjz333" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;xjz333" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.mathscv.com/aws" title="JupyterHub → https:&#x2F;&#x2F;www.mathscv.com&#x2F;aws" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i>JupyterHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.mathscv.com/cloud" title="iCloud → https:&#x2F;&#x2F;www.mathscv.com&#x2F;cloud" rel="noopener" target="_blank"><i class="fab fa-google fa-fw"></i>iCloud</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://xujinzh.github.io/" title="J-GitHub → https:&#x2F;&#x2F;xujinzh.github.io"><i class="fab fa-instagram fa-fw"></i>J-GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.mathscv.com/" title="J-MathsCV → https:&#x2F;&#x2F;www.mathscv.com" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i>J-MathsCV</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xujinzh.github.io/2020/03/18/convex-function-and-inflection-point/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/silence.jpg">
+      <meta itemprop="name" content="Jinzhong Xu">
+      <meta itemprop="description" content="众妙之门">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="J Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          凸函数和拐点
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-03-18 13:05:49" itemprop="dateCreated datePublished" datetime="2020-03-18T13:05:49+08:00">2020-03-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-01-04 09:59:36" itemprop="dateModified" datetime="2022-01-04T09:59:36+08:00">2022-01-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/maths/" itemprop="url" rel="index"><span itemprop="name">maths</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/maths/mathematical-analysis/" itemprop="url" rel="index"><span itemprop="name">mathematical analysis</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>凸函数（Convex function）和拐点（Inflection point）。 此部分为参考 华东师范大学《数学分析上册》。以下内容为学习中的重点总结。</p>
+<p>凸函数一般用来证明不等式；注意左右导数和凸函数定义公式的联系；凸函数的性质比较好，在机器学习中是理想的代价函数，因为好求最小值点；注意拐点中的鞍点（是一阶导数等于0的点，即拐点中的驻点或稳定点）。</p>
+<a id="more"></a>
+
+<h1 id="凸函数"><a href="#凸函数" class="headerlink" title="凸函数"></a>凸函数</h1><p><strong>定义1</strong> 设$f$为定义在区间$I$上的函数，若对$I$上的任意两点$x_1, x_2$和任意实数$\lambda\in(0,1)$总有<br>$$<br>f(\lambda x_1 + (1-\lambda) x_2)\leq \lambda f(x_1) + (1 - \lambda)f(x_2),<br>$$<br>则称$f$为$I$上的凸函数。反之，如果总有<br>$$<br>f(\lambda x_1 + (1 - \lambda) x_2)\geq \lambda f(x_1) + (1 - \lambda) f(x_2),<br>$$<br>则称$f$为$I$上的凹函数。</p>
+<p>另外，</p>
+<ol>
+<li>如果上面的不等式为严格不等式，那么称严格凸函数和严格凹函数。</li>
+<li>如果$-f$为区间$I$上的凹函数，那么$f$为区间$I$上的凸函数。</li>
+</ol>
+<p><strong>引理</strong> $f$为$I$上的凸函数的充要条件是对于$I$上的任意三点$x_1 &lt; x_2 &lt; x_3$，总有<br>$$<br>\frac{f(x_2) - f(x_1)}{x_2 - x_1} \leq \frac{f(x_3) - f(x_2)}{x_3 - x_2}.<br>$$<br>同样地，$f$为$I$上的凸函数的充要条件是对于$I$上的任意三点$x_1 &lt; x_2 &lt; x_3$，有<br>$$<br>\frac{f(x_2) - f(x_1)}{x_2 - x_1} \leq \frac{f(x_3) - f(x_1)}{x_3 - x_1} \leq \frac{f(x_3) - f(x_2)}{x_3 - x_2}.<br>$$<br><strong>注意，这里把$x_2, x_3$看着一个变量时，函数$\frac{f(x_3) - f(x_1)}{x_3 - x_1}$是一个增函数，可以利用单调有界定理，取极限</strong></p>
+<p><strong>定理6.14</strong> 设$f$为区间$I$上的可导函数，则下述论断互相等价：</p>
+<ol>
+<li><p>$f$为$I$上的增函数；</p>
+</li>
+<li><p>$f^{\prime}$为$I$上的增函数；</p>
+</li>
+<li><p>对$I$上的任意两点$x_1, x_2$有<br>$$<br>f(x_2) \geq f(x_1) + f^{\prime}(x_1)(x_2 - x_1).<br>$$<br>论断3的几何意义就是说曲线$y=f(x)$总是在它的任一切线上方。</p>
+</li>
+</ol>
+<p><strong>定理 6.15</strong> 设$f$为区间$I$上的二阶可导函数，则在$I$上$f$为凸函数（凹函数）的充要条件是<br>$$<br>f^{(2)}(x) \geq 0 \ (f^{(2)}(x) \leq 0), \ x \in I.<br>$$<br><strong>定理</strong> 若函数$f$为定义在开区间$(a, b)$上的可导的凸函数（凹函数），则$x_0 \in (a, b)$为$f$的极小值点（极大值点）的充要条件是$x_0$为$f$的稳定点，即$f^{\prime}(x_0) = 0$.</p>
+<p><strong>定理</strong> 设函数$f(x)$为<strong>开区间</strong>$(a, b)$上的凸函数，不恒为常数，则$f(x)$不取最大值。</p>
+<p>​        凸函数的最大值只能在端点处取得。即，若函数$f(x)$是闭区间$[a, b]$上的凸的连续函数，那么<br>$$<br>f(x) \leq \max{f(a), f(b)}.<br>$$<br><strong>詹森（Jensen）不等式</strong> 若$f$为$[a, b]$上的凸函数，则对任意$x_i \in [a, b], \lambda_i &gt; 0 \ (i = 1, 2, \cdots, n), \ \sum^n_{i = 1} \lambda_i = 1$，有<br>$$<br>f(\sum^n_{i=1} \lambda_i x_i) \leq \sum^n_{i=1} \lambda_i f(x_i).<br>$$<br><strong>引理</strong> 设$f$为开区间$I$内的凸函数（凹函数），则$f$在$I$内任一点$x_0$都存在左、右导数。从而$f$在$x_0$连续。</p>
+<h1 id="拐点"><a href="#拐点" class="headerlink" title="拐点"></a>拐点</h1><p><strong>定义2</strong> 设曲线$y = f(x)$在点$(x_0, f(x_0))$处有穿过曲线的切线，且在切点近旁，曲线在切线的两侧分别是严格凸和严格凹的，这时称点$(x_0, f(x_0))$为曲线$y = f(x)$的拐点。</p>
+<p>拐点是凹和凸曲线的分界点。</p>
+<p><strong>定理6.16</strong> 若$f$在$x_0$二阶可导，则$(x_0, f(x_0))$为曲线$y = f(x)$的拐点的必要条件是$f^{(2)} = 0$.</p>
+<p><strong>定理6.17</strong> 设$f$在$x_0$可导，在某领域$U^o(x_0)$上二阶可导。若在$U^o_{+}(x_0)$和$U^o_{-}(x_0)$上$f^{(2)}$的符号相反，则$(x_0, f(x_0))$为曲线$y = f(x)$的拐点。</p>
+<p><strong>注意：若$(x_0, f(x_0))$是曲线$y = f(x)$的一个拐点，$y = f(x)$在$x_0$的导数不一定存在，如$y = \sqrt[3]{x}$在$x = 0$。</strong></p>
+<p><strong>定理</strong> 如下三个陈述成立。</p>
+<ol>
+<li>若$f$为凸函数，$\lambda$为非负实数，则$\lambda f$为凸函数；</li>
+<li>若$f, g$均为凸函数，则$f + g$为凸函数；</li>
+<li>若$f$为区间$I$上凸函数，$g$为$J \supset f(I)$上凸增函数，则$g \circ f$为$I$上凸函数。</li>
+</ol>
+<p><strong>定理</strong> 设$f$为区间$I$上严格凸函数，$x_0 \in I$为$f$的极小值点，则$x_0$为$f$在$I$上唯一的极小值点。</p>
+<p><strong>定理</strong> 若$f, g$均为区间$I$上凸函数，则$F(x) = \max {f(x), g(x)}$也是$I$上凸函数。</p>
+<h1 id="几个重要不等式"><a href="#几个重要不等式" class="headerlink" title="几个重要不等式"></a><strong>几个重要不等式</strong></h1><p><strong>均值不等式</strong> 设$a_i &gt; 0 \ (i = 1, 2, \cdots, n)$，有<br>$$<br>\frac{n}{\frac{1}{a_1} + \frac{1}{a_2} + \cdots + \frac{1}{a_n}} \leq \sqrt[n]{a_1 a_2 \cdots a_n} \leq \frac{a_1 + a_2 + \cdots + a_n}{n}<br>$$<br>证明，构造函数$f(x) = \ln(x)$可证明第二个不等号，然后用变化$x = \frac{1}{t}$和第二个不等号证明第一个不等号。</p>
+<p><strong>Young 不等式</strong> 设$a, b, p, q$均是正实数，且$\frac{1}{p} + \frac{1}{q} = 1$，则<br>$$<br>ab \leq \frac{a^p}{p} + \frac{b^q}{q}<br>$$<br>等号成立当且仅当 $a^p = b^q$. </p>
+<p>证明，利用函数$y = e^x$的凸性<br>$$<br>ab = e^{\ln(a)} e^{\ln(b)} = e^{\frac{1}{p} \ln(a^p) + \frac{1}{q} \ln(b^q)} \leq \frac{1}{p} e^{\ln(a^p)} + \frac{1}{q} e^{\ln(b^q)} = \frac{a^p}{p} + \frac{b^q}{q}.<br>$$<br>可以用该不等式证明如下的Holder不等式。</p>
+<p><strong>Holder 不等式</strong> 设$a_i, b_i &gt; 0 \ (i = 1, 2, \cdots, n)$，有<br>$$<br>\sum^n_{i = 1} a_i b_i \leq (\sum^n_{i = 1} a^p_i)^{\frac{1}{p}}(\sum^n_{i = 1} b^q_i)^{\frac{1}{q}}<br>$$<br>其中$p &gt; 1, q &gt; 1, \frac{1}{p} + \frac{1}{q} = 1$.</p>
+<p>证明，取$a = \frac{a_k}{(\sum^n_{i = 1}a^p_i)^{\frac{1}{p}}}$, $b = \frac{b_k}{(\sum^n_{i = 1}b^q_i)^{\frac{1}{q}}}$ ，并带入Young不等式。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>感谢打赏</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Jinzhong Xu 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Jinzhong Xu 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>原作者： </strong>Jinzhong Xu
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://xujinzh.github.io/2020/03/18/convex-function-and-inflection-point/" title="凸函数和拐点">https://xujinzh.github.io/2020/03/18/convex-function-and-inflection-point/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/convex/" rel="tag"><i class="fa fa-tag"></i> convex</a>
+              <a href="/tags/inflection/" rel="tag"><i class="fa fa-tag"></i> inflection</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/03/17/vim-command/" rel="prev" title="vim 快捷键">
+                  <i class="fa fa-chevron-left"></i> vim 快捷键
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/03/18/synchronous-asynchronous/" rel="next" title="同步与异步">
+                  同步与异步 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jinzhong Xu</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5f45c300bef10091" async="async"></script>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"xujinzh","repo":"xujinzh.github.io","client_id":"695ca5d39e2ba2f9feb5","client_secret":"9d4027af6364ff54595b7a8580977ec58c38a5ae","admin_user":"xujinzh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"ee6739960ee6356632e72fd5ccad4a4b"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

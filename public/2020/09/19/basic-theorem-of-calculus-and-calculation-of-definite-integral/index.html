@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/letter-j.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/letter_j_favicon_32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/letter_j_favicon_16.ico">
+  <link rel="mask-icon" href="/images/letter-j.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"xujinzh.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.9.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="首先给出一个结论：连续函数必定存在原函数。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微积分基本定理和定积分计算">
+<meta property="og:url" content="https://xujinzh.github.io/2020/09/19/basic-theorem-of-calculus-and-calculation-of-definite-integral/index.html">
+<meta property="og:site_name" content="J Blog">
+<meta property="og:description" content="首先给出一个结论：连续函数必定存在原函数。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-09-19T01:44:17.000Z">
+<meta property="article:modified_time" content="2022-01-04T01:59:36.202Z">
+<meta property="article:author" content="Jinzhong Xu">
+<meta property="article:tag" content="maths">
+<meta property="article:tag" content="definite integral">
+<meta property="article:tag" content="integral">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://xujinzh.github.io/2020/09/19/basic-theorem-of-calculus-and-calculation-of-definite-integral/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://xujinzh.github.io/2020/09/19/basic-theorem-of-calculus-and-calculation-of-definite-integral/","path":"2020/09/19/basic-theorem-of-calculus-and-calculation-of-definite-integral/","title":"微积分基本定理和定积分计算"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>微积分基本定理和定积分计算 | J Blog</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">J Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">204</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">19</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">219</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%98%E9%99%90%E7%A7%AF%E5%88%86%E4%B8%8E%E5%8E%9F%E5%87%BD%E6%95%B0%E7%9A%84%E5%AD%98%E5%9C%A8%E6%80%A7"><span class="nav-number">1.</span> <span class="nav-text">变限积分与原函数的存在性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8D%A2%E5%85%83%E7%A7%AF%E5%88%86%E6%B3%95%E4%B8%8E%E5%88%86%E9%83%A8%E7%A7%AF%E5%88%86%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">换元积分法与分部积分法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%B0%E5%8B%92%E5%85%AC%E5%BC%8F%E7%9A%84%E7%A7%AF%E5%88%86%E5%9E%8B%E4%BD%99%E9%A1%B9"><span class="nav-number">3.</span> <span class="nav-text">泰勒公式的积分型余项</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E8%A7%92%E5%87%BD%E6%95%B0%E7%A7%AF%E5%88%86%E6%8A%80%E5%B7%A7"><span class="nav-number">4.</span> <span class="nav-text">三角函数积分技巧</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jinzhong Xu"
+      src="/images/silence.jpg">
+  <p class="site-author-name" itemprop="name">Jinzhong Xu</p>
+  <div class="site-description" itemprop="description">众妙之门</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">219</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">204</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xujinzh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xujinzh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jinzhongxu@csu.ac.cn" title="E-Mail → mailto:jinzhongxu@csu.ac.cn" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/xjz333" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;xjz333" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.mathscv.com/aws" title="JupyterHub → https:&#x2F;&#x2F;www.mathscv.com&#x2F;aws" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i>JupyterHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.mathscv.com/cloud" title="iCloud → https:&#x2F;&#x2F;www.mathscv.com&#x2F;cloud" rel="noopener" target="_blank"><i class="fab fa-google fa-fw"></i>iCloud</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://xujinzh.github.io/" title="J-GitHub → https:&#x2F;&#x2F;xujinzh.github.io"><i class="fab fa-instagram fa-fw"></i>J-GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.mathscv.com/" title="J-MathsCV → https:&#x2F;&#x2F;www.mathscv.com" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i>J-MathsCV</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xujinzh.github.io/2020/09/19/basic-theorem-of-calculus-and-calculation-of-definite-integral/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/silence.jpg">
+      <meta itemprop="name" content="Jinzhong Xu">
+      <meta itemprop="description" content="众妙之门">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="J Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          微积分基本定理和定积分计算
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-09-19 09:44:17" itemprop="dateCreated datePublished" datetime="2020-09-19T09:44:17+08:00">2020-09-19</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-01-04 09:59:36" itemprop="dateModified" datetime="2022-01-04T09:59:36+08:00">2022-01-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/maths/" itemprop="url" rel="index"><span itemprop="name">maths</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/maths/mathematical-analysis/" itemprop="url" rel="index"><span itemprop="name">mathematical analysis</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>首先给出一个结论：连续函数必定存在原函数。</p>
+<a id="more"></a>
+
+<h1 id="变限积分与原函数的存在性"><a href="#变限积分与原函数的存在性" class="headerlink" title="变限积分与原函数的存在性"></a>变限积分与原函数的存在性</h1><p>假设$f(x)$在$[a,b]$上可积，对于任何的$x\in[a,b]$，$f$在$[a,x]$上也可积，定义<br>$$<br>\Phi(x) = \int^x_a f(t) \mathrm{d}t, x\in [a, b]<br>$$<br>为以积分上限$x$为自变量的函数，称为变上限的定积分。同样，定义变下限的定积分为<br>$$<br>\Psi(x) = \int^b_x f(t) \mathrm{d}t, x\in[a,b].<br>$$<br>统称$\Psi$与$\Phi$为变限积分。由于$\int^b_x f(t) \mathrm{d}t = -\int^x_b f(t)\mathrm{d}t$，因此下面只讨论变上限积分。</p>
+<p><strong>定理 9.9</strong>    若$f$在$[a,b]$上可积，则$\Phi$在$[a,b]$上连续。</p>
+<p><strong>定理 9.10</strong>    （原函数存在定理）若$f$在$[a,b]$上连续，则$\Phi$在$[a,b]$上处处可导，且<br>$$<br>\Phi^{\prime}(x) = \frac{\mathrm{d}}{\mathrm{d}x}\int^x_a f(t)\mathrm{d}t = f(x), x \in [a, b].<br>$$<br><strong>定理 9.11</strong>    （积分第二中值定理）设函数$f$在$[a,b]$上可积，</p>
+<ul>
+<li>若函数$g$在$[a,b]$上减，且$g(x)\geq 0$，则存在$\xi \in [a,b]$，使得</li>
+</ul>
+<p>$$<br>\int^b_a f(x)g(x) \mathrm{d}x = g(a) \int^{\xi}_a f(x) \mathrm{d}x.<br>$$</p>
+<ul>
+<li>若函数$g$在$[a,b]$上增，且$g(x)\geq 0$，则存在$\eta \in [a,b]$，使得</li>
+</ul>
+<p>$$<br>\int^b_a f(x) g(x) \mathrm{d}x = g(b) \int^b_{\eta} f(x) \mathrm{d}x.<br>$$</p>
+<ul>
+<li>推广：若函数$g$在$[a,b]$上单调，则存在$\xi \in [a,b]$使得</li>
+</ul>
+<p>$$<br>\int_{a}^{b} f(x)g(x) \mathrm{d}x = g(a) \int_{a}^{\xi} f(x) \mathrm{d}x + g(b) \int_{\xi}^{b} f(x) \mathrm{d}x.<br>$$</p>
+<h1 id="换元积分法与分部积分法"><a href="#换元积分法与分部积分法" class="headerlink" title="换元积分法与分部积分法"></a>换元积分法与分部积分法</h1><p><strong>定理 9.12</strong>    （定积分换元积分法）若函数$f$在$[a,b]$上连续，$\varphi^{\prime}$在$[a,b]$上可积，且满足<br>$$<br>\varphi(\alpha)=a, \varphi(\beta)=b, \varphi([\alpha, \beta]) \subset [a,b],<br>$$<br>则有定积分换元公式：<br>$$<br>\int^b_a f(x) \mathrm{d}x = \int^{\beta}_{\alpha}f(\varphi(t))\varphi^{\prime}(t) \mathrm{d}t.<br>$$<br><strong>定理 9.13</strong>    （定积分分部积分法）若$u(x),v(x)$为$[a,b]$上的可微函数，且$u^{\prime}(x)$和$v^{\prime}(x)$都在$[a,b]$上可积，则有定积分分部积分公式：<br>$$<br>\int^b_a u(x)v^{\prime}(x) \mathrm{d}x = u(x)v(x)\vert^b_a - \int^b_a u^{\prime}(x)v(x)\mathrm{d}x.<br>$$</p>
+<h1 id="泰勒公式的积分型余项"><a href="#泰勒公式的积分型余项" class="headerlink" title="泰勒公式的积分型余项"></a>泰勒公式的积分型余项</h1><p>若在$[a,b]$上$u(x),v(x)$有$n+1$阶连续导函数，则有<br>$$<br>\int^b_a u(x)v^{(n+1)}(x)\mathrm{d}x = [u(x)v^{(n)}(x) - u^{\prime}v^{(n-1)}(x) + \cdots + \\<br>(-1)^n u^{(n)}(x)v(x)]^b_a + (-1)^{n+1}\int^b_a u^{(n+1)}(x) v(x) \mathrm{d}x \\<br>(n = 1, 2, \cdots)<br>$$<br>假设函数$f$在点$x_0$的某领域$U(x_0)$上有$n+1$阶连续导函数，令$x\in U(x_0)$，$u(t) = (x-t)^n, v(t) = f(t), t\in [x_0, x]$ （或$[x, x_0]$），<br>$$<br>\int^x_{x_0} (x-t)^n f^{(n+1)}(t) \mathrm{d}t = [(x-t)^n f^{(n)}(t) + n(x-t)^{n-1}f^{(n-1)}(t) + \cdots + \\<br>n! f(t)]^x_{x_0} + \int^x_{x_0} 0 \cdot f(t) \mathrm{d}t \\<br>= n! f(x) - n! [f(x_0) + f^{\prime}(x_0)(x-x_0) + \cdots + \frac{f^{(n)}(x_0)}{n!}(x-x_0)^n] \\<br>= n! R_n(x)<br>$$<br>其中$R_n(x)$即为泰勒公式的$n$阶余项。由此求得<br>$$<br>R_n(x) = \frac{1}{n!} \int^x_{x_0} f^{(n+1)}(t)(x-t)^n \mathrm{d}t,<br>$$<br>这就是泰勒公式的积分型余项。</p>
+<p>由于$f^{(n+1)}(t)$连续，$(x-t)^n$在$[x_0, x]$（或$[x, x_0]$）上保持同号，因此由推广的积分第一中值定理，可得<br>$$<br>R_n(x) = \frac{1}{n!} f^{(n+1)}(\xi) \int^x_{x_0} (x-t)^n \mathrm{d}t \\<br>= \frac{1}{(n+1)!}f^{(n+1)}(\xi)(x-x_0)^{n+1},<br>$$<br>其中$\xi = x_0 + \theta(x-x_0), 0\leq \theta \leq 1$，得到得结果就是拉格朗日型余项。</p>
+<p>如果直接运用积分第一中值定理，那么<br>$$<br>R_n(x) = \frac{1}{n!}f^{(n+1)}(\xi)(x-\xi)^n(x-x_0), \\<br>\xi = x_0 + \theta(x-x_0), 0 \leq \theta \leq 1.<br>$$<br>由于<br>$$<br>(x-\xi)^n (x-x_0) = [x-x_0 - \theta(x-x_0)]^n(x-x_0) \\<br>=(1-\theta)^n(x-x_0)^{n+1},<br>$$<br>因此<br>$$<br>R_n(x) = \frac{1}{n!}f^{(n+1)}(x_0 + \theta(x-x_0))(1-\theta)^n(x-x_0)^{n+1}, \\<br>0 \leq \theta \leq 1.<br>$$<br>特别地，当$x_0 = 0$时，又有<br>$$<br>R_n(x) = \frac{1}{n!}f^{(n+1)}(\theta x)(1 - \theta)^n x^{n+1}, 0\leq \theta \leq 1.<br>$$<br>称为泰勒公式得柯西型余项。</p>
+<h1 id="三角函数积分技巧"><a href="#三角函数积分技巧" class="headerlink" title="三角函数积分技巧"></a>三角函数积分技巧</h1><ul>
+<li><p>$\int_{0}^{\frac{\pi}{2}} f(\sin x, \cos x)\mathrm{d}x = \int_{0}^{\frac{\pi}{2}} f(\cos x, \sin x)\mathrm{d}x.$ </p>
+</li>
+<li><p>$I(m,n) = \int^{\frac{\pi}{2}}_0 \cos^m x \sin^n x \mathrm{d}x$，$m,n$为正整数，则</p>
+</li>
+</ul>
+<p>$$<br>I(m,n) = \frac{m-1}{m+n}I(m-2,n) = \frac{n-1}{n+m}I(m,n-2), m,n=2,3,\cdots.<br>$$</p>
+<p>$$<br>I(m,n) =<br>\begin{cases}<br>\frac{(m-1)!! \cdot (n-1)!!}{(m+n)!!} \frac{\pi}{2}, m,n 都是偶数;\\<br>\frac{(m-1)!! \cdot (n-1)!!}{(m+n)!!}, 其他.<br>\end{cases}<br>$$</p>
+<ul>
+<li>$\int^{\frac{\pi}{2}}_0 \sin^n x \mathrm{d}x = \int^{\frac{\pi}{2}}_0 \cos^n x \mathrm{d}x = I(n, 0)$</li>
+</ul>
+<p>$$<br>I(n, 0) =<br>\begin{cases}<br>\frac{(n-1)!!}{n!!}\frac{\pi}{2}, n 是偶数;\\<br>\frac{(n-1)!!}{n!!}.<br>\end{cases}<br>$$</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>感谢打赏</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Jinzhong Xu 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Jinzhong Xu 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>原作者： </strong>Jinzhong Xu
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://xujinzh.github.io/2020/09/19/basic-theorem-of-calculus-and-calculation-of-definite-integral/" title="微积分基本定理和定积分计算">https://xujinzh.github.io/2020/09/19/basic-theorem-of-calculus-and-calculation-of-definite-integral/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/maths/" rel="tag"><i class="fa fa-tag"></i> maths</a>
+              <a href="/tags/definite-integral/" rel="tag"><i class="fa fa-tag"></i> definite integral</a>
+              <a href="/tags/integral/" rel="tag"><i class="fa fa-tag"></i> integral</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/09/12/properties-of-definite-integral/" rel="prev" title="定积分的性质">
+                  <i class="fa fa-chevron-left"></i> 定积分的性质
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/09/27/supplement-to-integrability-theory/" rel="next" title="可积性理论补叙">
+                  可积性理论补叙 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jinzhong Xu</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5f45c300bef10091" async="async"></script>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"xujinzh","repo":"xujinzh.github.io","client_id":"695ca5d39e2ba2f9feb5","client_secret":"9d4027af6364ff54595b7a8580977ec58c38a5ae","admin_user":"xujinzh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"4779557437f175ca2520bfb0d4d583ba"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

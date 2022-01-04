@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/letter-j.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/letter_j_favicon_32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/letter_j_favicon_16.ico">
+  <link rel="mask-icon" href="/images/letter-j.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"xujinzh.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.9.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="前一篇我们介绍了目标跟踪的基本原理是定义目标、生成候选框、提取特征、匹配最优候选框。根据这一原理，本篇介绍如何具体进行目标跟踪。 从具体的流程上来说，一次实现过程如下 输入图像（前一帧）—&gt; 候选框生成模型 —&gt; 特征提取模型 —&gt; 最优候选框模型 —&gt; 输出带有预测候选框的图像（后续帧）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何进行目标跟踪">
+<meta property="og:url" content="https://xujinzh.github.io/2020/08/24/how-to-object-tracking/index.html">
+<meta property="og:site_name" content="J Blog">
+<meta property="og:description" content="前一篇我们介绍了目标跟踪的基本原理是定义目标、生成候选框、提取特征、匹配最优候选框。根据这一原理，本篇介绍如何具体进行目标跟踪。 从具体的流程上来说，一次实现过程如下 输入图像（前一帧）—&gt; 候选框生成模型 —&gt; 特征提取模型 —&gt; 最优候选框模型 —&gt; 输出带有预测候选框的图像（后续帧）">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-08-24T08:30:19.000Z">
+<meta property="article:modified_time" content="2022-01-04T01:59:36.231Z">
+<meta property="article:author" content="Jinzhong Xu">
+<meta property="article:tag" content="vot">
+<meta property="article:tag" content="cv">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://xujinzh.github.io/2020/08/24/how-to-object-tracking/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://xujinzh.github.io/2020/08/24/how-to-object-tracking/","path":"2020/08/24/how-to-object-tracking/","title":"如何进行目标跟踪"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>如何进行目标跟踪 | J Blog</title>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">J Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">204</span></a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">19</span></a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">219</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%80%99%E9%80%89%E6%A1%86%E7%94%9F%E6%88%90%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.</span> <span class="nav-text">候选框生成模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E7%8E%87%E9%87%87%E6%A0%B7%E6%96%B9%E6%B3%95"><span class="nav-number">1.1.</span> <span class="nav-text">概率采样方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BB%91%E7%AA%97%E6%96%B9%E6%B3%95"><span class="nav-number">1.2.</span> <span class="nav-text">滑窗方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AA%E7%8E%AF%E7%A7%BB%E4%BD%8D%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.</span> <span class="nav-text">循环移位方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">特征提取模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-number">2.1.</span> <span class="nav-text">特征模型的分类</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%80%E4%BC%98%E5%80%99%E9%80%89%E6%A1%86%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.</span> <span class="nav-text">最优候选框模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">4.</span> <span class="nav-text">参考链接</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Jinzhong Xu"
+      src="/images/silence.jpg">
+  <p class="site-author-name" itemprop="name">Jinzhong Xu</p>
+  <div class="site-description" itemprop="description">众妙之门</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">219</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">204</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/xujinzh" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;xujinzh" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:jinzhongxu@csu.ac.cn" title="E-Mail → mailto:jinzhongxu@csu.ac.cn" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/xjz333" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;xjz333" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.mathscv.com/aws" title="JupyterHub → https:&#x2F;&#x2F;www.mathscv.com&#x2F;aws" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i>JupyterHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.mathscv.com/cloud" title="iCloud → https:&#x2F;&#x2F;www.mathscv.com&#x2F;cloud" rel="noopener" target="_blank"><i class="fab fa-google fa-fw"></i>iCloud</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://xujinzh.github.io/" title="J-GitHub → https:&#x2F;&#x2F;xujinzh.github.io"><i class="fab fa-instagram fa-fw"></i>J-GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://www.mathscv.com/" title="J-MathsCV → https:&#x2F;&#x2F;www.mathscv.com" rel="noopener" target="_blank"><i class="fab fa-instagram fa-fw"></i>J-MathsCV</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://xujinzh.github.io/2020/08/24/how-to-object-tracking/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/silence.jpg">
+      <meta itemprop="name" content="Jinzhong Xu">
+      <meta itemprop="description" content="众妙之门">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="J Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          如何进行目标跟踪
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-08-24 16:30:19" itemprop="dateCreated datePublished" datetime="2020-08-24T16:30:19+08:00">2020-08-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-01-04 09:59:36" itemprop="dateModified" datetime="2022-01-04T09:59:36+08:00">2022-01-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/research/" itemprop="url" rel="index"><span itemprop="name">research</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/research/object-tracking/" itemprop="url" rel="index"><span itemprop="name">object tracking</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>前一篇我们介绍了目标跟踪的基本原理是定义目标、生成候选框、提取特征、匹配最优候选框。根据这一原理，本篇介绍如何具体进行目标跟踪。</p>
+<p>从具体的流程上来说，一次实现过程如下</p>
+<p>输入图像（前一帧）—&gt; <strong>候选框生成模型</strong> —&gt; <strong>特征提取模型</strong> —&gt; <strong>最优候选框模型</strong> —&gt; 输出带有预测候选框的图像（后续帧）</p>
+<a id="more"></a>
+
+<h1 id="候选框生成模型"><a href="#候选框生成模型" class="headerlink" title="候选框生成模型"></a>候选框生成模型</h1><p>从前一帧到后续帧，目标可能出现位置变化、尺寸变化、旋转、光照变化等，因此需要对这些变化进行建模表示，常用的方法有概率采样方法、滑窗方法、循环移位方法等</p>
+<h2 id="概率采样方法"><a href="#概率采样方法" class="headerlink" title="概率采样方法"></a>概率采样方法</h2><p>通过放射变换得到候选框。假设前一帧的矩形框的为$x$，仿射变换的系数矩阵为$A$，后续帧的候选框为$y$，则<br>$$<br>y=Ax<br>$$<br>其中，仿射变换矩阵$A$描述了目标的位置变换、尺寸变换、旋转变换、长宽比变换等信息。</p>
+<p>概率采样表示放射变换矩阵$A$中的各个参数符合某种概率分别（如高斯分布）的随机变量，并生成不同数量的候选框。</p>
+<h2 id="滑窗方法"><a href="#滑窗方法" class="headerlink" title="滑窗方法"></a>滑窗方法</h2><p>滑窗方法模拟目标在视频中的移动过程。以某个形状和大小的结构元素（称为窗）在前一帧中按一定的空间间隔移动，每次移动后覆盖的图像中的相应像素即为后续帧的候选框。该方法只能表示位置变换，其他如尺寸变换、旋转变换还需进一步处理。</p>
+<h2 id="循环移位方法"><a href="#循环移位方法" class="headerlink" title="循环移位方法"></a>循环移位方法</h2><p>本质上来说，循环移位方法是滑窗方法的一种。但其使用较广，所以单独列出。将前一帧矩形框中的像素按照某种排列组成一个向量$a$，以向量$a$为基准向量生成循环矩阵。其中循环矩阵的每一行都对应一个候选框，求得该循环矩阵得最大特征值认为是最优的矩形框。该方法生成的候选框仅仅具有位置变换（如旋转变换），其他变换需要额外处理。因利用快速傅里叶变换求解循环矩阵的特征值比较快速，因此利用该生成模型的相关滤波算法速度较快，即具有较高的FPS.</p>
+<h1 id="特征提取模型"><a href="#特征提取模型" class="headerlink" title="特征提取模型"></a>特征提取模型</h1><p>得到候选框后，还需要进一步的从候选框中提取图像特征。常用的特征包括颜色特征、空间特征、形状特征、纹理特征、深度卷积特征等。特征越“深”（抽象但不直观，深度特征），对目标判别能力好，特征越“浅”（具体且直观，如颜色特征），对目标的空间位置信息保留越好。想好了需要哪些图像特征后，就需要把这些特征表示成计算机能够理解和计算的数值量，常用的方法包括朴素方法（naive，像素值）、统计方法（statistics，直方图）、数学变换（transform，像素值梯度等）</p>
+<p>特征提取模型就是特征和提取方法的结合。概括起来就是</p>
+<p>特征包括颜色、形状、纹理等，颜色包括灰度、彩色等</p>
+<p>提取方法包括朴素方法、统计方法、变换方法等，朴素方法如像素值，统计方法如直方图，变换方法如梯度等</p>
+<h2 id="特征模型的分类"><a href="#特征模型的分类" class="headerlink" title="特征模型的分类"></a>特征模型的分类</h2><p>特征模型按大类别分为手工提取特征（Hand-Crafted）和深度学习提取的深度特征（Deep-Learning，如CNN）。</p>
+<p>其中，手工提取特征方法包括Naive、Histogram series、Haar-lik等，Naive包括Gray-scale、Color，Histogram series包括Histogram of colors (HoC)、Histogram of gradients（HoG)，Color包括RGB、HSV、Color Names(CN)、LAB等。</p>
+<h1 id="最优候选框模型"><a href="#最优候选框模型" class="headerlink" title="最优候选框模型"></a>最优候选框模型</h1><p>在目标跟踪中，如何从候选框中选择最优的矩形框作为后续帧的目标预测是非常重要的和主要问题，直观上，就是从后续帧中找到与前一帧最“像”的目标，但这个“像”可以有多种定义方法。</p>
+<p>在计算机视觉中，该问题就是一个匹配问题，是目标跟踪的核心问题，它直接影响着算法的性能。及时前两部差强人意，但是优秀的匹配算法能够在一定程度上弥补它们的不足。</p>
+<p>匹配就是一个相似性度量的问题。比较的对象是前一帧的目标矩形框（常称为ground truth）和后续帧的各候选框（bounding-box）。可以将它们之间的相似度用距离来衡量，这里的距离是抽象距离，如空间距离（两个矩形框之间像素的距离，如 Minkowski distance $l^p$、Manhattan distance $l^1$、Euclidean distance $l^2$、Chebyshev distance $l^{\infty}$），可以是两个概率分布的距离（矩形框服从的概率分布），如Kullback–Leibler (KL) 散度，Bhattacharyya distance， 交叉熵，Wasserstein distance 等。</p>
+<p>该模型主流的匹配方法有两种，分别是生成式方法（generative）和判别式方法（discriminative），主要区别就在于是否有背景信息的引入，生成式方法把跟踪问题建模成拟合或多分类问题，而判别式方法把跟踪问题定义为二分类问题。</p>
+<p>一般在几帧匹配算法后会引入更新模块，这是因为，匹配算法得到了一系列的参数，应用这些参数即可对当前帧的目标位置进行预测。如果在后续所有帧的预测过程中都应用这些参数，可能会出现的结果是预测趋向不准确，最终导致跟踪的失败。其可能的原因包括累积误差、外因（如遮挡、光照变化）、以及内因（如目标外观变化、快速运动）等。如果引入更新模块，在每若干帧之后根据之前的预测结果更新匹配算法的参数，则可以减小误差，提高跟踪的准确性。</p>
+<p>但是，并不是每一帧都要进行更新模块，因为这样会消耗更多时间，导致跟踪的FPS较低。研究者更多的是采用多步一更新的策略。</p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a target="_blank" rel="noopener" href="https://developer.aliyun.com/article/766769">视觉目标跟踪漫谈：从原理到应用</a> </p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>感谢打赏</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="Jinzhong Xu 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/images/alipay.jpg" alt="Jinzhong Xu 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>原作者： </strong>Jinzhong Xu
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://xujinzh.github.io/2020/08/24/how-to-object-tracking/" title="如何进行目标跟踪">https://xujinzh.github.io/2020/08/24/how-to-object-tracking/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/vot/" rel="tag"><i class="fa fa-tag"></i> vot</a>
+              <a href="/tags/cv/" rel="tag"><i class="fa fa-tag"></i> cv</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/08/24/visual-object-tracking-definition/" rel="prev" title="视觉目标跟踪的应用、原理和定义">
+                  <i class="fa fa-chevron-left"></i> 视觉目标跟踪的应用、原理和定义
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/08/24/classification-of-object-tracking/" rel="next" title="目标跟踪算法的分类">
+                  目标跟踪算法的分类 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jinzhong Xu</span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+  <div class="addthis_inline_share_toolbox">
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5f45c300bef10091" async="async"></script>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@next-theme/pjax@0.5.0/pjax.min.js" integrity="sha256-3NkoLDrmHLTYj7csHIZSr0MHAFTXth7Ua/DDt4MRUAg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script><script src="/js/pjax.js"></script>
+
+  
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js","integrity":"sha256-r+3itOMtGGjap0x+10hu6jW/gZCzxHsoKrOd7gyRSGY="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"xujinzh","repo":"xujinzh.github.io","client_id":"695ca5d39e2ba2f9feb5","client_secret":"9d4027af6364ff54595b7a8580977ec58c38a5ae","admin_user":"xujinzh","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js","integrity":"sha256-Pmj85ojLaPOWwRtlMJwmezB/Qg8BzvJp5eTzvXaYAfA="},"path_md5":"e36df707039dfd50835baa44f106ef06"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>
